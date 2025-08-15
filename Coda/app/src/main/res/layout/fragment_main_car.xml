@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainCarFragment"
+    android:background="@drawable/rounded_rectangle_background">
+
+
+    <ImageView
+        android:id="@+id/car"
+        android:layout_width="400dp"
+        android:layout_height="450dp"
+        android:src="@drawable/car"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="32dp" />
+
+    <ImageView
+        android:id="@+id/car_left"
+        android:layout_width="400dp"
+        android:layout_height="450dp"
+        android:src="@drawable/carfrontleftcrop"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="32dp"
+        android:visibility="gone" />
+
+    <!-- Right door overlay -->
+    <ImageView
+        android:id="@+id/car_right"
+        android:layout_width="400dp"
+        android:layout_height="450dp"
+        android:src="@drawable/carfrontrightcrop"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="32dp"
+        android:visibility="gone" />
+
+    <!-- Left MaterialButton -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_left"
+        android:layout_width="60dp"
+        android:layout_height="36dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Left"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#333333"
+        app:cornerRadius="8dp" />
+
+    <!-- Off MaterialButton -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/car_doors"
+        android:layout_width="60dp"
+        android:layout_height="36dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="Off"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#333333"
+        app:cornerRadius="8dp" />
+
+    <!-- Right MaterialButton -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_right"
+        android:layout_width="60dp"
+        android:layout_height="36dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Right"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#333333"
+        app:cornerRadius="8dp" />
+
+
+</FrameLayout>
