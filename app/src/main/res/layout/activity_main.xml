@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/b_background">
     <!-- Top Control Bar -->
     <LinearLayout
         android:id="@+id/top_bar"
@@ -49,13 +50,15 @@
             android:id="@+id/car_info"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="@drawable/bg_whole_background"/>
 
         <FrameLayout
             android:id="@+id/function_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.618" />
+            android:layout_weight="1.618"
+            android:background="@drawable/bg_whole_background"/>
     </LinearLayout>
 
     <!-- Bottom Control Bar -->

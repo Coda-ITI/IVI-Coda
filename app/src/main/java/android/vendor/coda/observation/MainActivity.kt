@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        hideSystemBars()
         // Load the default fragments
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -75,5 +76,18 @@ class MainActivity : AppCompatActivity() {
         // Highlight selected button
         val selectedImageView = (selectedView as? ViewGroup)?.getChildAt(0) as? ImageView
         selectedImageView?.alpha = 1.0f // Full opacity for selected button
+    }
+
+    private fun hideSystemBars() {
+        if (packageManager.hasSystemFeature("android.hardware.type.automotive")) {
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_FULLSCREEN
+                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    )
+        }
     }
 }
