@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- Top Control Bar -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/bottombar_background"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/coda"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="60dp"
+                android:contentDescription="Engine"
+                android:src="@drawable/coda" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Main Content Area -->
+    <LinearLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:weightSum="2.618"
+        app:layout_constraintTop_toBottomOf="@+id/top_bar"
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <FrameLayout
+            android:id="@+id/car_info"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <FrameLayout
+            android:id="@+id/function_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.618" />
+    </LinearLayout>
+
+    <!-- Bottom Control Bar -->
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@drawable/bottombar_background"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="2.4"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/engine_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Engine"
+                android:src="@drawable/ic_gear" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/drowsiness_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Drowsiness"
+                android:src="@drawable/ic_map" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/volume_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Volume"
+                android:src="@drawable/ambient" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
