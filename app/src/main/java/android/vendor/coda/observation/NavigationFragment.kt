@@ -1,18 +1,33 @@
 package android.vendor.coda.observation
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.util.Log
+import android.content.Context
+import androidx.core.content.ContextCompat
+import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.views.overlay.MapEventsOverlay
 
 class NavigationFragment : Fragment() {
     private lateinit var mapView: MapView
     private lateinit var carMarker: Marker
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Configure OsmDroid - this is the proper way to initialize
+        Configuration.getInstance().userAgentValue = context.packageName
+        Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,35 +35,72 @@ class NavigationFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_navigation, container, false)
         mapView = view.findViewById(R.id.map_view) ?: throw IllegalStateException("MapView not found")
+        return view
+    }
 
-        // Set up map
-        mapView.setTileSource(org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Map initialization following the pattern from the working example
+        mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setBuiltInZoomControls(true)
         mapView.setMultiTouchControls(true)
+        mapView.minZoomLevel = 5.0
+        mapView.maxZoomLevel = 20.0
+        mapView.setUseDataConnection(true)
 
-        // Initialize marker at dummy start point
-        val startPoint = GeoPoint(30.0444, 31.2357)
-        carMarker = Marker(mapView)
-        carMarker.position = startPoint
-        carMarker.icon = resources.getDrawable(R.drawable.ic_marker, null)
-        carMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-        carMarker.title = "My Car"
-        mapView.overlays.add(carMarker)
+        // Set initial zoom and center
         val mapController = mapView.controller
-        mapController.setZoom(18.0) // reasonable zoom level; adjust to your needs
+        mapController.setZoom(15.0)
+
+        // Initialize marker at a default position
+        val startPoint = GeoPoint(30.0444, 31.2357)
+
+        // Create marker following the pattern from the working example
+        carMarker = Marker(mapView).apply {
+            position = startPoint
+            // Use the proper method to set anchor points
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            // Use a proper drawable resource for the marker
+            icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_marker)
+            title = "My Car"
+        }
+
+        mapView.overlays.add(carMarker)
         mapController.setCenter(startPoint)
 
+        // Add tap event handling similar to the working example
+        val mapEventsReceiver = object : MapEventsReceiver {
+            override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
+                updateMarkerPosition(p, "Updated Location")
+                return true
+            }
+
+            override fun longPressHelper(p: GeoPoint): Boolean {
+                return false
+            }
+        }
+        mapView.overlays.add(MapEventsOverlay(mapEventsReceiver))
+
+        // Simulate position update (this would normally come from GPS data)
+        simulatePositionUpdate()
+    }
+
+    private fun updateMarkerPosition(geoPoint: GeoPoint, title: String) {
+        carMarker.position = geoPoint
+        carMarker.title = title
+        mapView.controller.animateTo(geoPoint)
+        mapView.invalidate()
+        Log.d("Navigation", "Marker updated at: $geoPoint")
+    }
+
+    private fun simulatePositionUpdate() {
+        // This would normally be replaced with real GPS updates
         val lat = 30.07
         val lon = 31.02
         val newPosition = GeoPoint(lat, lon)
-
-        carMarker.position = newPosition
-
-        mapController.animateTo(newPosition) // animate instead of setCenter
-        mapView.invalidate() // force redraw
+        updateMarkerPosition(newPosition, "Updated Position")
         Log.w("GPS-UPDATE", "Updated car position to: $lat, $lon")
-
-        return view
     }
 
     override fun onResume() {
@@ -60,7 +112,9 @@ class NavigationFragment : Fragment() {
         super.onPause()
         mapView.onPause()
     }
-    override fun onDestroy() {
-        super.onDestroy()
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapView.onDetach()
     }
 }
