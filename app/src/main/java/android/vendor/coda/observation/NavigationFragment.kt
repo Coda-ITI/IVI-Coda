@@ -24,7 +24,6 @@ class NavigationFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        // Configure OsmDroid - this is the proper way to initialize
         Configuration.getInstance().userAgentValue = context.packageName
         Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
     }
@@ -41,7 +40,6 @@ class NavigationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Map initialization following the pattern from the working example
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setBuiltInZoomControls(true)
         mapView.setMultiTouchControls(true)
@@ -49,19 +47,14 @@ class NavigationFragment : Fragment() {
         mapView.maxZoomLevel = 20.0
         mapView.setUseDataConnection(true)
 
-        // Set initial zoom and center
         val mapController = mapView.controller
         mapController.setZoom(15.0)
 
-        // Initialize marker at a default position
         val startPoint = GeoPoint(30.0444, 31.2357)
 
-        // Create marker following the pattern from the working example
         carMarker = Marker(mapView).apply {
             position = startPoint
-            // Use the proper method to set anchor points
             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            // Use a proper drawable resource for the marker
             icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_marker)
             title = "My Car"
         }
@@ -69,7 +62,6 @@ class NavigationFragment : Fragment() {
         mapView.overlays.add(carMarker)
         mapController.setCenter(startPoint)
 
-        // Add tap event handling similar to the working example
         val mapEventsReceiver = object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
                 updateMarkerPosition(p, "Updated Location")
@@ -82,7 +74,6 @@ class NavigationFragment : Fragment() {
         }
         mapView.overlays.add(MapEventsOverlay(mapEventsReceiver))
 
-        // Simulate position update (this would normally come from GPS data)
         simulatePositionUpdate()
     }
 
@@ -95,7 +86,6 @@ class NavigationFragment : Fragment() {
     }
 
     private fun simulatePositionUpdate() {
-        // This would normally be replaced with real GPS updates
         val lat = 30.07
         val lon = 31.02
         val newPosition = GeoPoint(lat, lon)

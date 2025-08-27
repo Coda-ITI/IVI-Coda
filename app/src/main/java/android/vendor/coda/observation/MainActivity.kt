@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var observation : IObservationServiceIVIContract
     val TAG : String = "ServiceBinding"
 
-    // Add these properties to MainActivity
     private lateinit var mainCarFragment: MainCarFragment
     private lateinit var rpmDisplay: IRPMDisplay
     private lateinit var speedDisplay: ISpeedDisplay
@@ -54,7 +53,6 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             mainCarFragment = MainCarFragment()
-            // Store interface references
             rpmDisplay = mainCarFragment
             speedDisplay = mainCarFragment
             ultrasonicDisplay = mainCarFragment
@@ -68,7 +66,6 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.function_container, NavigationFragment())
                 .commit()
         } else {
-            // Restore fragment instance on configuration change
             mainCarFragment = supportFragmentManager.findFragmentById(R.id.car_info) as MainCarFragment
             rpmDisplay = mainCarFragment
             speedDisplay = mainCarFragment
