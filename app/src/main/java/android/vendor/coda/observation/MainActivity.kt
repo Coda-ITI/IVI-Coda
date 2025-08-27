@@ -1,5 +1,6 @@
 package android.vendor.coda.observation
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -22,6 +23,7 @@ import android.vendor.coda.observation.contracts.IUltrasonicDisplay
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import java.io.BufferedReader
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val carDataViewModel: CarDataViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences
     private var isDarkTheme: Boolean = false
-    lateinit var observation : IObservationServiceIVIContract
+//    lateinit var observation : IObservationServiceIVIContract
     val TAG : String = "ServiceBinding"
     private val overlayPackage = "android.vendor.coda.observation.lightmode"
     private val targetPackage = "android.vendor.coda.observation"
@@ -86,110 +88,110 @@ class MainActivity : AppCompatActivity() {
 
         updateThemeIcon()
 
-        try {
-            @SuppressLint("PrivateApi") val serviceManagerClass =
-                Class.forName("android.os.ServiceManager")
-            val getServiceMethod = serviceManagerClass.getMethod(
-                "getService",
-                String::class.java
-            )
-
-            val result = getServiceMethod.invoke(null, "android.vendor.coda.observation.IObservationServiceIVIContract/default")
-
-            if (result != null) {
-                val binder = result as IBinder
-                observation = IObservationServiceIVIContract.Stub.asInterface(binder)
-                Log.d(TAG, "Successfully bound to IObservationServiceIVIContract!")
-            } else {
-                Log.e(TAG, "Failed to get service binder.")
-            }
-        } catch (e: ClassNotFoundException) {
-            Log.e(TAG, "Class not found: " + e.message)
-        } catch (e: NoSuchMethodException) {
-            Log.e(TAG, "Method not found: " + e.message)
-        } catch (e: InvocationTargetException) {
-            Log.e(TAG, "Invocation target exception: " + e.message)
-        } catch (e: IllegalAccessException) {
-            Log.e(TAG, "Illegal access exception: " + e.message)
-        }
-
-        if (observation != null) {
-            observation.registerRPMReadingsCallback(object : IRPMReadings.Stub() {
-                override fun onRpmChanged(rpm: Int) {
-                    Log.d(TAG, "RPMCallback: Received RPM: $rpm")
-                    carDataViewModel.updateRPM(rpm.toFloat())
-                }
-            })
-
-            observation.registerSpeedReadingsCallback(object : ISpeedReadings.Stub() {
-                override fun onSpeedChanged(speed: Int) {
-                    Log.d(TAG, "SpeedCallback: Received speed: $speed")
-                    carDataViewModel.updateSpeed(speed.toFloat())
-                }
-            })
-
-            observation.registerUltrasonic0ReadingsCallback(object : IUltrasonicReadings.Stub() {
-                override fun onUltrasonicChanged(position: Int, reading: Float) {
-                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
-                    carDataViewModel.updateUltrasonicRL(reading)
-                }
-            })
-
-            observation.registerUltrasonic1ReadingsCallback(object : IUltrasonicReadings.Stub() {
-                override fun onUltrasonicChanged(position: Int, reading: Float) {
-                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
-                    carDataViewModel.updateUltrasonicRC(reading)
-                }
-            })
-
-            observation.registerUltrasonic2ReadingsCallback(object : IUltrasonicReadings.Stub() {
-                override fun onUltrasonicChanged(position: Int, reading: Float) {
-                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
-                    carDataViewModel.updateUltrasonicRC(reading)
-                }
-            })
-
-            observation.registerUltrasonic3ReadingsCallback(object : IUltrasonicReadings.Stub() {
-                override fun onUltrasonicChanged(position: Int, reading: Float) {
-                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
-                    carDataViewModel.updateUltrasonicRR(reading)
-                }
-            })
-
-            observation.registerDoorStateFLReadingsCallback(object : IDoorStateReadings.Stub() {
-                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
-                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
-                    carDataViewModel.updateDoorFL(isOpen)
-                }
-            })
-
-            observation.registerDoorStateFRReadingsCallback(object : IDoorStateReadings.Stub() {
-                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
-                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
-                    carDataViewModel.updateDoorFR(isOpen)
-                }
-            })
-
-            observation.registerDoorStateRLReadingsCallback(object : IDoorStateReadings.Stub() {
-                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
-                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
-                    carDataViewModel.updateDoorRL(isOpen)
-                }
-            })
-
-            observation.registerDoorStateRRReadingsCallback(object : IDoorStateReadings.Stub() {
-                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
-                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
-                    carDataViewModel.updateDoorRR(isOpen)
-                }
-            })
-
-            observation.changeSystemThemeToDark()
-            observation.changeSystemThemeToLight()
-
-        } else {
-            Log.e(TAG, "observation is null")
-        }
+//        try {
+//            @SuppressLint("PrivateApi") val serviceManagerClass =
+//                Class.forName("android.os.ServiceManager")
+//            val getServiceMethod = serviceManagerClass.getMethod(
+//                "getService",
+//                String::class.java
+//            )
+//
+//            val result = getServiceMethod.invoke(null, "android.vendor.coda.observation.IObservationServiceIVIContract/default")
+//
+//            if (result != null) {
+//                val binder = result as IBinder
+//                observation = IObservationServiceIVIContract.Stub.asInterface(binder)
+//                Log.d(TAG, "Successfully bound to IObservationServiceIVIContract!")
+//            } else {
+//                Log.e(TAG, "Failed to get service binder.")
+//            }
+//        } catch (e: ClassNotFoundException) {
+//            Log.e(TAG, "Class not found: " + e.message)
+//        } catch (e: NoSuchMethodException) {
+//            Log.e(TAG, "Method not found: " + e.message)
+//        } catch (e: InvocationTargetException) {
+//            Log.e(TAG, "Invocation target exception: " + e.message)
+//        } catch (e: IllegalAccessException) {
+//            Log.e(TAG, "Illegal access exception: " + e.message)
+//        }
+//
+//        if (observation != null) {
+//            observation.registerRPMReadingsCallback(object : IRPMReadings.Stub() {
+//                override fun onRpmChanged(rpm: Int) {
+//                    Log.d(TAG, "RPMCallback: Received RPM: $rpm")
+//                    carDataViewModel.updateRPM(rpm.toFloat())
+//                }
+//            })
+//
+//            observation.registerSpeedReadingsCallback(object : ISpeedReadings.Stub() {
+//                override fun onSpeedChanged(speed: Int) {
+//                    Log.d(TAG, "SpeedCallback: Received speed: $speed")
+//                    carDataViewModel.updateSpeed(speed.toFloat())
+//                }
+//            })
+//
+//            observation.registerUltrasonic0ReadingsCallback(object : IUltrasonicReadings.Stub() {
+//                override fun onUltrasonicChanged(position: Int, reading: Float) {
+//                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
+//                    carDataViewModel.updateUltrasonicRL(reading)
+//                }
+//            })
+//
+//            observation.registerUltrasonic1ReadingsCallback(object : IUltrasonicReadings.Stub() {
+//                override fun onUltrasonicChanged(position: Int, reading: Float) {
+//                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
+//                    carDataViewModel.updateUltrasonicRC(reading)
+//                }
+//            })
+//
+//            observation.registerUltrasonic2ReadingsCallback(object : IUltrasonicReadings.Stub() {
+//                override fun onUltrasonicChanged(position: Int, reading: Float) {
+//                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
+//                    carDataViewModel.updateUltrasonicRC(reading)
+//                }
+//            })
+//
+//            observation.registerUltrasonic3ReadingsCallback(object : IUltrasonicReadings.Stub() {
+//                override fun onUltrasonicChanged(position: Int, reading: Float) {
+//                    Log.d(TAG, "UltrasonicCallback: Received position and reading: $position, $reading")
+//                    carDataViewModel.updateUltrasonicRR(reading)
+//                }
+//            })
+//
+//            observation.registerDoorStateFLReadingsCallback(object : IDoorStateReadings.Stub() {
+//                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+//                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+//                    carDataViewModel.updateDoorFL(isOpen)
+//                }
+//            })
+//
+//            observation.registerDoorStateFRReadingsCallback(object : IDoorStateReadings.Stub() {
+//                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+//                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+//                    carDataViewModel.updateDoorFR(isOpen)
+//                }
+//            })
+//
+//            observation.registerDoorStateRLReadingsCallback(object : IDoorStateReadings.Stub() {
+//                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+//                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+//                    carDataViewModel.updateDoorRL(isOpen)
+//                }
+//            })
+//
+//            observation.registerDoorStateRRReadingsCallback(object : IDoorStateReadings.Stub() {
+//                override fun onDoorStateChanged(position: Int, isOpen: Boolean) {
+//                    Log.d(TAG, "DoorStateCallback: Received position and state: $position, $isOpen")
+//                    carDataViewModel.updateDoorRR(isOpen)
+//                }
+//            })
+//
+//            observation.changeSystemThemeToDark()
+//            observation.changeSystemThemeToLight()
+//
+//        } else {
+//            Log.e(TAG, "observation is null")
+//        }
 
     }
 
@@ -222,11 +224,13 @@ class MainActivity : AppCompatActivity() {
 
         if (isDarkTheme) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            // observation.changeSystemThemeToDark()
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//            observation.changeSystemThemeToLight()
         }
 
-        recreate()
+        toggleOverlayTheme()
     }
 
     private fun replaceFunctionFragment(fragment: Fragment) {
@@ -268,6 +272,7 @@ class MainActivity : AppCompatActivity() {
         setOverlayTheme(!isOverlayEnabled())
     }
 
+    @RequiresPermission(Manifest.permission.KILL_BACKGROUND_PROCESSES)
     @SuppressLint("UseCompatLoadingForDrawables")
     fun setOverlayTheme(enable: Boolean) {
         try {
