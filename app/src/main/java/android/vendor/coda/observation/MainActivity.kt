@@ -2,6 +2,9 @@ package android.vendor.coda.observation
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.car.Car
+import android.car.hardware.CarPropertyValue
+import android.car.hardware.property.CarPropertyManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.util.Log
@@ -45,6 +49,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var speedDisplay: ISpeedDisplay
     private lateinit var ultrasonicDisplay: IUltrasonicDisplay
     private lateinit var doorState: IDoorState
+
+    private val VENDOR_EXTENSION_PROPERTY: Int = 0x21400105
+
+    private var car: Car? = null
+    private var carPropertyManager: CarPropertyManager? = null
+
+    private var carPropertyListener = object : CarPropertyManager.CarPropertyEventCallback {
+        override fun onChangeEvent(value: CarPropertyValue<Any>) {
+            Log.d(TAG, "Received on changed car property event")
+            Toast.makeText(this@MainActivity, "Hello", Toast.LENGTH_SHORT).show()
+            // change theme
+            toggleTheme()
+        }
+
+        override fun onErrorEvent(propId: Int, zone: Int) {
+            Log.w(TAG, "Received error car property event, propId=$propId")
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -193,6 +216,21 @@ class MainActivity : AppCompatActivity() {
 //            Log.e(TAG, "observation is null")
 //        }
 
+        car = Car.createCar(this@MainActivity, null, Car.CAR_WAIT_TIMEOUT_WAIT_FOREVER) { car, ready ->
+            if (ready) {
+                carPropertyManager = car.getCarManager(Car.PROPERTY_SERVICE) as CarPropertyManager
+                Log.d(TAG, "CarPropertyManager initialized")
+            } else {
+                Log.e(TAG, "Car service connection failed")
+            }
+        }
+
+
+        carPropertyManager?.registerCallback(
+            carPropertyListener,
+            VENDOR_EXTENSION_PROPERTY,
+            CarPropertyManager.SENSOR_RATE_ONCHANGE
+        )
     }
 
     private fun setupBottomBarButtons() {
@@ -227,7 +265,7 @@ class MainActivity : AppCompatActivity() {
             // observation.changeSystemThemeToDark()
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-//            observation.changeSystemThemeToLight()
+            // observation.changeSystemThemeToLight()
         }
 
         toggleOverlayTheme()
