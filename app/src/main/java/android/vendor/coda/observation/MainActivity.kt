@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         isDarkTheme = sharedPreferences.getBoolean("dark_theme", false)
 
-        // Apply theme before setting content view
         if (isDarkTheme) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
@@ -35,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
         hideSystemBars()
 
-        // Load the default fragments
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.car_info, MainCarFragment())
@@ -46,10 +44,8 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        // Set up bottom bar button click listeners
         setupBottomBarButtons()
 
-        // Set initial theme icon
         updateThemeIcon()
     }
 
@@ -57,7 +53,6 @@ class MainActivity : AppCompatActivity() {
         val themeButton = findViewById<View>(R.id.settings_button)
         val drowsinessButton = findViewById<View>(R.id.map_button)
         val volumeButton = findViewById<View>(R.id.ambient_button)
-        val infoButton = findViewById<View>(R.id.info_button)
 
         themeButton.setOnClickListener {
             toggleTheme()
@@ -74,12 +69,6 @@ class MainActivity : AppCompatActivity() {
             updateButtonSelection(it)
         }
 
-        infoButton.setOnClickListener {
-            replaceFunctionFragment(InfoFragment())
-            updateButtonSelection(it)
-        }
-
-        // Set initial selection (NavigationFragment is default)
         updateButtonSelection(drowsinessButton)
     }
 
@@ -106,7 +95,6 @@ class MainActivity : AppCompatActivity() {
             themeIcon.setImageResource(R.drawable.ic_dark)
         }
 
-        // Keep theme button at full opacity always
         themeIcon.alpha = 1.0f
     }
 
@@ -117,11 +105,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateButtonSelection(selectedView: View) {
-        // Reset all button selections except theme button
         val buttons = listOf(
             findViewById<View>(R.id.map_button),
-            findViewById<View>(R.id.ambient_button),
-            findViewById<View>(R.id.info_button)
+            findViewById<View>(R.id.ambient_button)
         )
 
         buttons.forEach { button ->

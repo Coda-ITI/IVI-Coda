@@ -59,4 +59,7 @@ dependencies {
 
     implementation("com.github.skydoves:colorpickerview:2.2.4")
     implementation("androidx.cardview:cardview:1.0.0")
+
+//    implementation("com.github.ibrahimsn98:speedometer:1.0.1")
+    implementation("com.github.anastr:speedviewlib:1.6.1")
 }

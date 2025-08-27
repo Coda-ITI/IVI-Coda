@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainCarFragment"
     android:background="@drawable/bg_whole_background">
-
 
     <ImageView
         android:id="@+id/car"
@@ -35,43 +34,94 @@
         android:layout_marginTop="32dp"
         android:visibility="gone" />
 
-    <!-- Left MaterialButton -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_left"
-        android:layout_width="60dp"
-        android:layout_height="36dp"
-        android:layout_gravity="bottom|start"
+    <ImageView
+        android:id="@+id/car_right_rear"
+        android:layout_width="400dp"
+        android:layout_height="450dp"
+        android:src="@drawable/carbackrightcrop"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="32dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/car_left_rear"
+        android:layout_width="400dp"
+        android:layout_height="450dp"
+        android:src="@drawable/carbackleftcrop"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="32dp"
+        android:visibility="gone" />
+
+
+    <!-- Speedometer Gauge -->
+    <com.github.anastr.speedviewlib.AwesomeSpeedometer
+        android:id="@+id/speedometer"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="top|start"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Left"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#333333"
-        app:cornerRadius="8dp" />
+        android:layout_marginTop="16dp"
+        app:sv_maxSpeed="240"
+        app:sv_unit="km/h"
+        app:sv_speedTextColor="#FFFFFF"
+        app:sv_unitTextColor="#FF5722"
+        app:sv_indicatorColor="#FF5722"
+        app:sv_speedometerColor="#333333"
+        app:sv_textSize="12sp"
+        app:sv_unitTextSize="8sp"
+        app:sv_withTremble="false"
+        app:sv_backgroundCircleColor="@color/gaugeBG"
+        app:sv_speedometerWidth="4dp"
+        tools:ignore="MissingClass" />
 
-    <!-- Off MaterialButton -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/car_doors"
-        android:layout_width="60dp"
-        android:layout_height="36dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:text="Off"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#333333"
-        app:cornerRadius="8dp" />
-
-    <!-- Right MaterialButton -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_right"
-        android:layout_width="60dp"
-        android:layout_height="36dp"
-        android:layout_gravity="bottom|end"
+    <!-- RPM Meter Gauge -->
+    <com.github.anastr.speedviewlib.AwesomeSpeedometer
+        android:id="@+id/rpm_meter"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="top|end"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Right"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#333333"
-        app:cornerRadius="8dp" />
+        android:layout_marginTop="16dp"
+        app:sv_maxSpeed="10"
+        app:sv_unit="x1000 RPM"
+        app:sv_speedTextColor="#FFFFFF"
+        app:sv_unitTextColor="#2A9D8F"
+        app:sv_indicatorColor="#2A9D8F"
+        app:sv_speedometerColor="#264653"
+        app:sv_textSize="12sp"
+        app:sv_unitTextSize="8sp"
+        app:sv_withTremble="false"
+        app:sv_backgroundCircleColor="@color/gaugeBG"
+        app:sv_speedometerWidth="4dp"
+        tools:ignore="MissingClass" />
 
+    <ImageView
+        android:id="@+id/warning_rear_left"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_beware"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="85dp"
+        android:layout_marginTop="380dp"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/warning_rear_center"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_beware"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="470dp"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/warning_rear_right"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_beware"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="85dp"
+        android:layout_marginTop="380dp"
+        android:visibility="invisible" />
 
 </FrameLayout>
