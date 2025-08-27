@@ -1,6 +1,8 @@
 package android.vendor.coda.observation
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +20,12 @@ import android.vendor.coda.observation.contracts.IRPMDisplay
 import android.vendor.coda.observation.contracts.ISpeedDisplay
 import android.vendor.coda.observation.contracts.IUltrasonicDisplay
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.lang.reflect.InvocationTargetException
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +34,9 @@ class MainActivity : AppCompatActivity() {
     private var isDarkTheme: Boolean = false
     lateinit var observation : IObservationServiceIVIContract
     val TAG : String = "ServiceBinding"
+    private val overlayPackage = "android.vendor.coda.observation.lightmode"
+    private val targetPackage = "android.vendor.coda.observation"
+    private val userId = 10
 
     private lateinit var mainCarFragment: MainCarFragment
     private lateinit var rpmDisplay: IRPMDisplay
@@ -220,19 +229,6 @@ class MainActivity : AppCompatActivity() {
         recreate()
     }
 
-    private fun updateThemeIcon() {
-        val themeButton = findViewById<LinearLayout>(R.id.settings_button)
-        val themeIcon = themeButton.getChildAt(0) as ImageView
-
-        if (isDarkTheme) {
-            themeIcon.setImageResource(R.drawable.ic_sun)
-        } else {
-            themeIcon.setImageResource(R.drawable.ic_dark)
-        }
-
-        themeIcon.alpha = 1.0f
-    }
-
     private fun replaceFunctionFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.function_container, fragment)
@@ -266,4 +262,114 @@ class MainActivity : AppCompatActivity() {
                     )
         }
     }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun toggleOverlayTheme() {
+        setOverlayTheme(!isOverlayEnabled())
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun setOverlayTheme(enable: Boolean) {
+        try {
+            val isOverlayEnabled = isOverlayEnabled()
+            Log.i(TAG, "Overlay $overlayPackage current state: enabled=$isOverlayEnabled, setting to enabled=$enable")
+
+            if (isOverlayEnabled != enable) {
+                val command = "cmd overlay ${if (enable) "enable" else "disable"} --user $userId $overlayPackage"
+                val (success, output) = executeShellCommand(command)
+                if (!success) {
+                    throw IllegalStateException("Shell command failed: $output")
+                }
+
+                Log.i(TAG, "Overlay $overlayPackage set to enabled=$enable")
+                updateThemeIcon()
+
+                restartTargetApp(this, targetPackage)
+            } else {
+                Log.i(TAG, "Overlay $overlayPackage already in desired state: enabled=$enable")
+            }
+
+            Toast.makeText(this, "Theme ${if (enable) "enabled" else "disabled"}", Toast.LENGTH_SHORT).show()
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Permission denied: Ensure app is a system app with CHANGE_OVERLAY_PACKAGES permission", e)
+            Toast.makeText(this, "Permission denied: App must be a system app", Toast.LENGTH_LONG).show()
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Overlay $overlayPackage not found or invalid: ${e.message}", e)
+            Toast.makeText(this, "Overlay not found or invalid", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set overlay $overlayPackage: ${e.message}", e)
+            Toast.makeText(this, "Failed to set theme", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun isOverlayEnabled(): Boolean {
+        try {
+            val (success, output) = executeShellCommand("cmd overlay list --user $userId")
+            if (success) {
+                val enabled = output.lines().any { it.contains("[x] $overlayPackage") }
+                Log.i(TAG, "Overlay state check: enabled=$enabled, output=$output")
+                return enabled
+            } else {
+                Log.w(TAG, "Failed to check overlay state: $output")
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error checking overlay state: ${e.message}")
+        }
+        return false
+    }
+
+    private fun updateThemeIcon() {
+        val themeButton = findViewById<LinearLayout>(R.id.settings_button)
+        val themeIcon = themeButton.getChildAt(0) as ImageView
+
+        if (isOverlayEnabled()) {
+            themeIcon.setImageResource(R.drawable.ic_sun)
+        } else {
+            themeIcon.setImageResource(R.drawable.ic_dark)
+        }
+
+        themeIcon.alpha = 1.0f
+    }
+
+    private fun executeShellCommand(command: String): Pair<Boolean, String> {
+        try {
+            val process = Runtime.getRuntime().exec(command)
+            val output = BufferedReader(InputStreamReader(process.inputStream)).use { it.readText() }
+            val error = BufferedReader(InputStreamReader(process.errorStream)).use { it.readText() }
+            val exitCode = process.waitFor()
+            if (exitCode == 0) {
+                Log.i(TAG, "Executed shell command: $command, output: $output")
+                return Pair(true, output)
+            } else {
+                Log.e(TAG, "Shell command failed: $command, error: $error, exit code: $exitCode")
+                return Pair(false, error)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to execute shell command: ${e.message}", e)
+            return Pair(false, e.message ?: "Unknown error")
+        }
+    }
+
+    private fun restartTargetApp(context: Context, targetPackage: String) {
+        try {
+            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+            activityManager.killBackgroundProcesses(targetPackage)
+            Log.i(TAG, "Force-stopped $targetPackage")
+
+            val packageManager = context.packageManager
+            val intent = packageManager.getLaunchIntentForPackage(targetPackage)
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                ContextCompat.startActivity(context, intent, null)
+                Log.i(TAG, "Relaunched $targetPackage")
+            } else {
+                Log.w(TAG, "No launch intent found for $targetPackage")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to restart $targetPackage: ${e.message}", e)
+            Toast.makeText(context, "Failed to restart target app", Toast.LENGTH_LONG).show()
+        }
+    }
+
 }
