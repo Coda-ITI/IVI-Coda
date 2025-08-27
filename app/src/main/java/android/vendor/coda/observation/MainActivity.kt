@@ -1,20 +1,40 @@
 package android.vendor.coda.observation
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
+import android.widget.LinearLayout
+import androidx.core.content.edit
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var sharedPreferences: SharedPreferences
+    private var isDarkTheme: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        isDarkTheme = sharedPreferences.getBoolean("dark_theme", false)
+
+        // Apply theme before setting content view
+        if (isDarkTheme) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         hideSystemBars()
+
         // Load the default fragments
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -28,16 +48,20 @@ class MainActivity : AppCompatActivity() {
 
         // Set up bottom bar button click listeners
         setupBottomBarButtons()
+
+        // Set initial theme icon
+        updateThemeIcon()
     }
 
     private fun setupBottomBarButtons() {
-        val engineButton = findViewById<View>(R.id.settings_button)
+        val themeButton = findViewById<View>(R.id.settings_button)
         val drowsinessButton = findViewById<View>(R.id.map_button)
         val volumeButton = findViewById<View>(R.id.ambient_button)
+        val infoButton = findViewById<View>(R.id.info_button)
 
-        engineButton.setOnClickListener {
-            replaceFunctionFragment(SettingsFragment())
-            updateButtonSelection(it)
+        themeButton.setOnClickListener {
+            toggleTheme()
+            updateThemeIcon()
         }
 
         drowsinessButton.setOnClickListener {
@@ -50,8 +74,40 @@ class MainActivity : AppCompatActivity() {
             updateButtonSelection(it)
         }
 
+        infoButton.setOnClickListener {
+            replaceFunctionFragment(InfoFragment())
+            updateButtonSelection(it)
+        }
+
         // Set initial selection (NavigationFragment is default)
         updateButtonSelection(drowsinessButton)
+    }
+
+    private fun toggleTheme() {
+        isDarkTheme = !isDarkTheme
+        sharedPreferences.edit { putBoolean("dark_theme", isDarkTheme) }
+
+        if (isDarkTheme) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
+        recreate()
+    }
+
+    private fun updateThemeIcon() {
+        val themeButton = findViewById<LinearLayout>(R.id.settings_button)
+        val themeIcon = themeButton.getChildAt(0) as ImageView
+
+        if (isDarkTheme) {
+            themeIcon.setImageResource(R.drawable.ic_sun)
+        } else {
+            themeIcon.setImageResource(R.drawable.ic_dark)
+        }
+
+        // Keep theme button at full opacity always
+        themeIcon.alpha = 1.0f
     }
 
     private fun replaceFunctionFragment(fragment: Fragment) {
@@ -61,11 +117,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateButtonSelection(selectedView: View) {
-        // Reset all button selections
+        // Reset all button selections except theme button
         val buttons = listOf(
-            findViewById<View>(R.id.settings_button),
             findViewById<View>(R.id.map_button),
-            findViewById<View>(R.id.ambient_button)
+            findViewById<View>(R.id.ambient_button),
+            findViewById<View>(R.id.info_button)
         )
 
         buttons.forEach { button ->
