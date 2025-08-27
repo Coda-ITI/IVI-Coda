@@ -5,7 +5,7 @@
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/b_background">
+    android:background="@color/backgroundColor">
     <!-- Top Control Bar -->
     <LinearLayout
         android:id="@+id/top_bar"
@@ -50,15 +50,13 @@
             android:id="@+id/car_info"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bg_whole_background"/>
+            android:layout_weight="1"/>
 
         <FrameLayout
             android:id="@+id/function_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.618"
-            android:background="@drawable/bg_whole_background"/>
+            android:layout_weight="1.618"/>
     </LinearLayout>
 
     <!-- Bottom Control Bar -->
