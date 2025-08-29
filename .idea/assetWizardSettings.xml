@@ -79,7 +79,8 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="$PROJECT_DIR$/../InstrumentCluster/ui/assets/iti-logo.png" />
+                                                <entry key="imagePath" value="$USER_HOME$/aidl/Google_AI_Studio_2025-08-15T11_39_38.034Z.png" />
+                                                <entry key="scalingPercent" value="68" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -107,15 +108,6 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
-                                    </map>
-                                  </option>
-                                  <option name="values">
-                                    <map>
-                                      <entry key="generateLegacyIcon" value="false" />
-                                      <entry key="generatePlayStoreIcon" value="false" />
-                                      <entry key="generateRoundIcon" value="false" />
-                                      <entry key="generateWebpIcons" value="false" />
-                                      <entry key="outputName" value="iti_logo" />
                                     </map>
                                   </option>
                                 </PersistentState>
