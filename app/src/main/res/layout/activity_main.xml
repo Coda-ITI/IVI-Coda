@@ -29,7 +29,7 @@
                 android:layout_width="100dp"
                 android:layout_height="60dp"
                 android:contentDescription="Engine"
-                android:src="@drawable/coda" />
+                android:src="@mipmap/iti_logo_foreground" />
         </LinearLayout>
 
     </LinearLayout>
