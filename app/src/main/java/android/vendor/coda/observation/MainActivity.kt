@@ -225,11 +225,11 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        carPropertyManager?.registerCallback(
-            carPropertyListener,
-            VENDOR_EXTENSION_PROPERTY,
-            CarPropertyManager.SENSOR_RATE_ONCHANGE
-        )
+//        carPropertyManager?.registerCallback(
+//            carPropertyListener,
+//            VENDOR_EXTENSION_PROPERTY,
+//            CarPropertyManager.SENSOR_RATE_ONCHANGE
+//        )
     }
 
     private fun setupBottomBarButtons() {
