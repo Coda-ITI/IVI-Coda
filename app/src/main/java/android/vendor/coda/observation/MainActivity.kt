@@ -37,7 +37,7 @@ import java.lang.reflect.InvocationTargetException
 class MainActivity : AppCompatActivity() {
     private val carDataViewModel: CarDataViewModel by viewModels()
     private lateinit var sharedPreferences: SharedPreferences
-    private var isDarkTheme: Boolean = false
+    private var isDarkTheme: Boolean = true
     lateinit var observation : IObservationServiceIVIContract
     val TAG : String = "ServiceBinding"
     private val overlayPackage = "android.vendor.coda.observation.lightmode"
@@ -55,22 +55,22 @@ class MainActivity : AppCompatActivity() {
     private var car: Car? = null
     private var carPropertyManager: CarPropertyManager? = null
 
-    private var carPropertyListener = object : CarPropertyManager.CarPropertyEventCallback {
-        override fun onChangeEvent(value: CarPropertyValue<Any>) {
-            Log.d(TAG, "Received on changed car property event")
-            Toast.makeText(this@MainActivity, "Hello", Toast.LENGTH_SHORT).show()
-            toggleTheme()
-        }
-
-        override fun onErrorEvent(propId: Int, zone: Int) {
-            Log.w(TAG, "Received error car property event, propId=$propId")
-        }
-    }
+//    private var carPropertyListener = object : CarPropertyManager.CarPropertyEventCallback {
+//        override fun onChangeEvent(value: CarPropertyValue<Any>) {
+//            Log.d(TAG, "Received on changed car property event")
+//            Toast.makeText(this@MainActivity, "Hello", Toast.LENGTH_SHORT).show()
+//            toggleTheme()
+//        }
+//
+//        override fun onErrorEvent(propId: Int, zone: Int) {
+//            Log.w(TAG, "Received error car property event, propId=$propId")
+//        }
+//    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        isDarkTheme = sharedPreferences.getBoolean("dark_theme", false)
+        isDarkTheme = sharedPreferences.getBoolean("dark_theme", true)
 
         if (isDarkTheme) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -219,17 +219,17 @@ class MainActivity : AppCompatActivity() {
             if (ready) {
                 carPropertyManager = car.getCarManager(Car.PROPERTY_SERVICE) as CarPropertyManager
                 Log.d(TAG, "CarPropertyManager initialized")
+
+                // register callback for assistant VHAL property
+//                carPropertyManager?.registerCallback(
+//                    carPropertyListener,
+//                    VENDOR_EXTENSION_PROPERTY,
+//                    CarPropertyManager.SENSOR_RATE_ONCHANGE
+//                )
             } else {
                 Log.e(TAG, "Car service connection failed")
             }
         }
-
-
-//        carPropertyManager?.registerCallback(
-//            carPropertyListener,
-//            VENDOR_EXTENSION_PROPERTY,
-//            CarPropertyManager.SENSOR_RATE_ONCHANGE
-//        )
     }
 
     private fun setupBottomBarButtons() {
@@ -253,6 +253,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateButtonSelection(drowsinessButton)
+    }
+
+    private fun setThemeToLightMode() {
+        if (isDarkTheme) {
+            toggleTheme()
+        }
+    }
+
+    private fun setThemeToDarkTheme() {
+        if (!isDarkTheme) {
+            toggleTheme()
+        }
     }
 
     private fun toggleTheme() {
